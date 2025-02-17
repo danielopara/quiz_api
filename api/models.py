@@ -10,3 +10,12 @@ class AppUser(models.Model):
     
     def __str__(self):
         return self.email
+    
+    
+class UserQuizProfile(models.Model):
+    usr_id = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    games_amount = models.IntegerField(default=0)
+    games_won = models.IntegerField(default=0)
+    games_lost = models.IntegerField(default=0)
+    
+    
