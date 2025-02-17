@@ -15,11 +15,23 @@ class UserView():
     @api_view(['POST'])
     def register(request):
         try:
+            email = request.data['user']['email']
+            if AppUser.objects.filter(email=email).exists():
+                return Response({'success': False, 'data': "email already exists"}, status=status.HTTP_400_BAD_REQUEST)
             serializer=AppUserSerializer(data=request.data)
             if serializer.is_valid():
                 app_user = serializer.save()
+                profiles = [
+                {"games_amount": profile.games_amount,
+                 "games_won": profile.games_won,
+                 "games_lost": profile.games_lost}
+                for profile in app_user.userquizprofile_set.all()
+            ]
                 return Response({'success': True,
-                                 'data': AppUserSerializer(app_user).data},
+                                 'data': {
+                                     'email': app_user.email,
+                                     'profile':  profiles
+                                     }},
                                 status=status.HTTP_201_CREATED)
             
             return Response({"success": False, 
