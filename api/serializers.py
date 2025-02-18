@@ -2,8 +2,27 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from rest_framework import serializers
 
-from .models import AppUser, User, UserQuizProfile
+from .models import AppUser, Question, User, UserQuizProfile
 
+
+class QuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = '__all__'
+        read_only_fields = ('creator',)
+        
+    def create(self, validated_data):
+        try:
+            request = self.context.get('request')
+           
+            app_user = AppUser.objects.get(id=request.user.id)
+                
+            validated_data['creator'] = app_user
+                
+            return Question.objects.create(**validated_data)
+            
+        except Exception as e:
+            raise serializers.ValidationError({"error": f"failed to create question: {str(e)}"})
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
