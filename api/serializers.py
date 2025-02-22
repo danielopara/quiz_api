@@ -15,11 +15,19 @@ class QuizSerializer(serializers.ModelSerializer):
         try:
             request = self.context.get('request')
            
-            app_user = AppUser.objects.get(id=request.user.id)
+            app_user = User.objects.get(id=request.user.id)
+            user = AppUser.objects.get(email=app_user.email)
                 
-            validated_data['creator'] = app_user
+            validated_data['creator'] = user
+
                 
-            return Question.objects.create(**validated_data)
+            return Question.objects.create(creator=validated_data['creator']
+                                           , question=validated_data['question'],
+                                           option_a=validated_data['option_a'],
+                                           option_b=validated_data['option_b'],
+                                           option_c=validated_data['option_c'],
+                                           option_d=validated_data['option_d'],
+                                           correct_answer=validated_data['correct_answer'])
             
         except Exception as e:
             raise serializers.ValidationError({"error": f"failed to create question: {str(e)}"})

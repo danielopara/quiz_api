@@ -30,6 +30,7 @@ class UserQuizProfile(models.Model):
     
     
 class Question(models.Model):
+    id = models.AutoField(primary_key=True)
     creator = models.ForeignKey(AppUser, on_delete=models.CASCADE)
     question = models.TextField()
     option_a = models.CharField(max_length=255)
@@ -39,4 +40,6 @@ class Question(models.Model):
     correct_answer = models.CharField(max_length=1, choices=[('A', 'A'), ('B', 'B'), ('C', 'C'), ('D','D')])
     created_at = models.DateTimeField(auto_now_add=True)
     
+    def __str__(self):
+        return self.question
     
